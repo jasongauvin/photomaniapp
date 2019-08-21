@@ -9,7 +9,7 @@
     </form>
     <p v-if="loading">Loading...</p>
     <ul v-else>
-      <li v-for="image in images" :key="image.id">{{image}}</li>
+      <image-card v-for="image in images" :key="image.id" :image="image" />
     </ul>
   </div>
 </template>
@@ -17,8 +17,13 @@
 <script>
 import config from "../../config";
 import axios from "axios";
+import ImageCard from "@/components/ImageCard";
+
 export default {
   name: "home",
+  components: {
+    ImageCard
+  },
   data() {
     return {
       loading: false,
