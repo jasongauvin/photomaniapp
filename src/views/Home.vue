@@ -1,81 +1,62 @@
 <template>
   <div>
     <nav class="navbar">
-      <form class="searchbar">
-        <label>
-          <span class='screen-reader-only'>Search:</span>
-          <input 
-            v-model="tag" 
-            placeholder="Search for photos"
-            type="text" 
-            class="searchbar-input">
-        </label>
-        <button 
-          type="submit" 
-          class="btn btn--green btn--go" 
-          @click.prevent="search">
-            Go
-        </button>
-      </form>
+      <button type="submit" class="btn btn--green btn--go" @click.prevent="search">Go</button>
     </nav>
-   <div class="wrapper">
-      <p v-if="loading" class="text-centered">
-        Loading...
-      </p>
+    <div class="wrapper">
+      <p v-if="loading" class="text-centered">Loading...</p>
       <ul v-else class="image-card-grid">
-        <image-card
-          v-for="image in images"
-          :key="image.id"
-          :image="image" />
+        <image-card v-for="image in cleanImages" :key="image.id" :image="image" />
       </ul>
-   </div>
+    </div>
   </div>
 </template>
 
 <script>
-import config from '../../config';
-import axios from 'axios';
-import ImageCard from '@/components/ImageCard';
+import axios from "axios";
+import ImageCard from "@/components/ImageCard";
 export default {
-  name: 'home',
+  name: "home",
   components: {
     ImageCard
   },
   data() {
     return {
       loading: false,
-      tag: '',
       images: []
+    };
+  },
+  computed: {
+    cleanImages() {
+      return this.images.filter(image => image.url);
     }
   },
   methods: {
     search() {
       this.loading = true;
       this.fetchImages()
-        .then((response) => {
-          this.images = response.data.photos.photo;
+        .then(response => {
+          console.log(response);
+          this.images = response.data;
           this.loading = false;
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("An error ocurred: ", error);
-        })
+        });
     },
     fetchImages() {
       return axios({
-        method: 'get',
-        url: 'https://api.flickr.com/services/rest',
+        method: "get",
+        url: "https://picsum.photos/v2/list?page=2&limit=30",
         params: {
-          method: 'flickr.photos.search',
-          api_key: config.api_key,
-          tags: this.tag,
-          extras: 'url_n, owner_name, date_taken, views',
+          extras: "url, author, id, download_url",
           page: 1,
-          format: 'json',
+          format: "json",
           nojsoncallback: 1,
-          per_page: 30,
+          per_page: 30
         }
-      })
-    },
+      });
+    }
   }
 };
 </script>
@@ -100,7 +81,7 @@ export default {
 }
 .image-card-grid {
   list-style: none;
-  margin: .5rem 0;
+  margin: 0.5rem 0;
   padding: 0;
   display: flex;
   align-items: flex-start;
@@ -111,7 +92,7 @@ export default {
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  background: #F0F0F0;
+  background: #f0f0f0;
 }
 .searchbar {
   width: 300px;
@@ -126,7 +107,7 @@ export default {
   }
 }
 .searchbar-input {
-  padding: .5rem 1rem;
+  padding: 0.5rem 1rem;
   border-radius: 20px;
   font-size: 1rem;
   border: 1px solid gray;
@@ -137,7 +118,7 @@ export default {
   }
 }
 .btn {
-  padding: .5rem 1rem;
+  padding: 0.5rem 1rem;
   font-size: 1rem;
   border-radius: 20px;
   background: transparent;
@@ -149,7 +130,7 @@ export default {
   font-weight: bold;
 }
 .btn--go {
-  padding: .5rem 2rem;
+  padding: 0.5rem 2rem;
   margin-left: 1rem;
 }
 </style>
